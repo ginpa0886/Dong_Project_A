@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7010853628010790023
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7010853628010790136}
+  - component: {fileID: 7010853628010790137}
+  m_Layer: 0
+  m_Name: WindowManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7010853628010790136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7010853628010790023}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7010853628010790137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7010853628010790023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efce9913393383749a6d16bf91475ffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_winobj:
+  - m_WindowId: 0
+    m_WindowObj: {fileID: 7734475764495788665, guid: 250a56f0973896d429bdeb6f19793e5a, type: 3}
+  - m_WindowId: 1
+    m_WindowObj: {fileID: 6038146724042241621, guid: fa84864aee181fb46a3423fb4f942178, type: 3}
+  - m_WindowId: 2
+    m_WindowObj: {fileID: 2566744847919621817, guid: 61754306b312d334d8df1a762ee73e61, type: 3}
+  - m_WindowId: 3
+    m_WindowObj: {fileID: 6866408596686190843, guid: 36fb32146c0e5394caa3a16e8f8ebba7, type: 3}
+  - m_WindowId: 4
+    m_WindowObj: {fileID: 4007209468410579276, guid: 555be897540e4c64dae56bea5ac1757d, type: 3}
+  - m_WindowId: 5
+    m_WindowObj: {fileID: 255795216906938007, guid: cb1f2f2f71ec8d14fbc7f9a5b843c05c, type: 3}
+  - m_WindowId: 6
+    m_WindowObj: {fileID: 5087540142853344858, guid: 2a2ce242dbf675e4580950ba0d4e81e1, type: 3}
+  - m_WindowId: 7
+    m_WindowObj: {fileID: 6700751036563390984, guid: e2486d35d331b814a8b5eb055eb2675c, type: 3}
+  - m_WindowId: 8
+    m_WindowObj: {fileID: 5716315273207247427, guid: 94c617a34b8855647984ebb0d0a3a605, type: 3}

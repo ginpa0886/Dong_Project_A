@@ -48,8 +48,45 @@ public class UI_Base : MonoBehaviour
         return objects[idx] as T;
     }
 
+    /// <summary>
+    /// Check the Binded. if Binded return true, not Binded return false
+    /// </summary>
+    /// <returns></returns>
+    protected bool IsInit()
+    {
+        if(_objects.Count == 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
     protected Text GetText(int idx) { return Get<Text>(idx); }
     protected Image GetImage(int idx) { return Get<Image>(idx); }
     protected Button GetButton(int idx) { return Get<Button>(idx); }
     protected GameObject GetGameObject(int idx) { return Get<GameObject>(idx); }
+}
+
+public abstract class BaseWindow : UI_Base
+{
+    private WIN_ID m_WindowId;
+    public WIN_ID WindowID { 
+        get 
+        { 
+            return m_WindowId; 
+        } 
+        set
+        {
+            m_WindowId = value;
+        }
+    }
+
+    public virtual void Open() { }
+
+    public virtual void Close() 
+    {
+        GameManager.Instance.Win.Close(WindowID);
+    }
+
+
 }

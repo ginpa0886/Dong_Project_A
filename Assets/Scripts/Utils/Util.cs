@@ -49,4 +49,27 @@ public class Util
         }
         return null;
     }
+
+    public static bool FindAndSetComponent<T>(GameObject go, ref T[] r_Array) where T : UnityEngine.Object
+    {
+        T[] components = go.GetComponentsInChildren<T>();
+
+        if(components.Length == 0)
+        {
+            return false;
+        }
+
+        r_Array = new T[components.Length];
+
+        for(int i = 0; i < components.Length; ++i)
+        {
+            r_Array[i] = components[i];
+        }
+
+        return true;
+    }
+
+
 }
+
+
