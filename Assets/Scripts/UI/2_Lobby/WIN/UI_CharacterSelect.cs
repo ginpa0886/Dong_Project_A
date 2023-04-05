@@ -60,12 +60,12 @@ public class UI_CharacterSelect : BaseWindow
         GetButton((int)Buttons.Back_Btn).onClick.AddListener(Close);
         GetButton((int)Buttons.Iron_Btn).onClick.AddListener(() => 
         {
-            Character_Data c_Data = GameManager.Instance.Data.Get_TryCharacterDataByType(_Enums.CHARACTER_TYPE.IRON);
+            Character_Data c_Data = GameManager.Instance.Table.Get_TryCharacterDataByType(_Enums.CHARACTER_TYPE.IRON);
             Set_CharacterData(c_Data);
         });
         GetButton((int)Buttons.Silent_Btn).onClick.AddListener(() =>
         {
-            Character_Data c_Data = GameManager.Instance.Data.Get_TryCharacterDataByType(_Enums.CHARACTER_TYPE.SILENT);
+            Character_Data c_Data = GameManager.Instance.Table.Get_TryCharacterDataByType(_Enums.CHARACTER_TYPE.SILENT);
             Set_CharacterData(c_Data);
         });
 
