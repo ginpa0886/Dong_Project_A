@@ -15,6 +15,12 @@ public enum WIN_ID
     GAME_SETTING_WIN,       // 게임 설정
     INPUT_SETTING_WIN,      // 입력 설정
     CREDIT_WIN,             // 크레딧
+
+    INGAME_FRAME_WIN,       // 인게임 프레임 
+    INGAME_REWARD_WIN,      // 인게임 리워드
+    INGAME_SELECT1_WIN,     // 인게임 선택창1 - 짧은 대화 선택지
+    INGAME_SELECT2_WIN,     // 인게임 선택창2 - 긴대화 포함된 UI
+    INGAME_SHOP_WIN,        // 인게임 상점
     
     MAX_WIN,
 }
@@ -29,6 +35,7 @@ public struct Win_Struct_Data
 public class WindowController : MonoBehaviour
 {
     const int START_SORTORDER = 2;
+    const int FIX_SORTORDER = 100;
 
     [SerializeField] Win_Struct_Data[] m_winobj;    // 이 부분에 대해서는 리소스를 읽어와서 만드는 형식으로 진행해도 좋았을 것 같음 + 나중에 어셋 번들 형식으로 연결해보도록 하자
     Dictionary<WIN_ID, UnityEngine.GameObject> m_windowDic = new Dictionary<WIN_ID, UnityEngine.GameObject>();
@@ -52,7 +59,7 @@ public class WindowController : MonoBehaviour
         }
     }
 
-    public void Open(WIN_ID window_id)
+    public void Open(WIN_ID window_id, bool fixUI = false)
     {
         BaseWindow basewin = null;
 
@@ -82,7 +89,7 @@ public class WindowController : MonoBehaviour
             basewin = win;
         }
 
-        Set_BaseWindowSortLayer(basewin);   // Canvas SortLayer Control
+        Set_BaseWindowSortLayer(basewin, fixUI);   // Canvas SortLayer Control
         basewin.gameObject.SetActive(true);
         basewin.Open();
     }    
@@ -114,8 +121,15 @@ public class WindowController : MonoBehaviour
         return;
     }
 
-    void Set_BaseWindowSortLayer(BaseWindow win)
+    void Set_BaseWindowSortLayer(BaseWindow win, bool fixUI = false)
     {
+        if(fixUI == true)
+        {
+            win.gameObject.GetComponent<Canvas>().sortingOrder = FIX_SORTORDER;
+            ++w_sortOrder;
+            return;
+        }
+
         win.gameObject.GetComponent<Canvas>().sortingOrder = w_sortOrder++;
     }
 
@@ -134,6 +148,14 @@ public class WindowController : MonoBehaviour
 
     public void Close_All()
     {
+        for(int i = 0; i < m_baseWindow.Length; ++i)
+        {
+            if(m_baseWindow[i] != null)
+            {
+                m_baseWindow[i].gameObject.SetActive(false);                
+            }
+        }
 
+        w_sortOrder = START_SORTORDER;
     }
 }

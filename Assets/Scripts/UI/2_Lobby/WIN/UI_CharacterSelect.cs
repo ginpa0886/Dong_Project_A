@@ -31,6 +31,8 @@ public class UI_CharacterSelect : BaseWindow
 
         Diff_Left_Btn,
         Diff_Right_Btn,
+
+        Start_Btn,
     }
 
     enum Images
@@ -80,9 +82,10 @@ public class UI_CharacterSelect : BaseWindow
             Set_DiffcultDescText();
         });
 
-        #region Event Set
-
-        #endregion
+        GetButton((int)Buttons.Start_Btn).onClick.AddListener(() =>
+        {
+            GameManager.Instance.Scene.Set_SceneByTpye(_Enums.SCENE_TYPE.INGAME);
+        });
     }
 
     #region Default

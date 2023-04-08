@@ -4,6 +4,18 @@ using UnityEngine;
 
 public static class _Enums
 {
+    #region SCENE
+    public enum SCENE_TYPE
+    {
+        LOADING,
+        LOBBY,
+        INGAME,
+
+        MAX,
+    }
+
+    #endregion
+
     public enum CHARACTER_TYPE
     {
         IRON,
@@ -35,5 +47,22 @@ public static class _Enums
         MAX,
     }
 
+    #endregion
+
+    #region PORTION
+    public enum PORTION_DICTIONARY_TYPE
+    {
+        NORMAL,
+        ADVANCE,
+        EXPERT,
+
+        MAX,
+    }
+
+    public enum PORTION_INGAME_TYPE
+    {
+
+        MAX,
+    }
     #endregion
 }

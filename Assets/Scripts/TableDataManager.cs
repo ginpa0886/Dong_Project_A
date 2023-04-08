@@ -75,6 +75,36 @@ public class Relic_Data
     public string Get_COmmonDesc2 { get { return r_common_desc2; } }
 }
 
+public class Portion_Data
+{
+    string p_name;
+    string p_img;
+    PORTION_DICTIONARY_TYPE p_dictionary_type;
+    PORTION_INGAME_TYPE p_ingame_type;
+    string p_desc;
+    string p_common_desc1;
+    string p_common_desc2;
+
+    public Portion_Data(string name, string img, PORTION_DICTIONARY_TYPE dictionary_type, PORTION_INGAME_TYPE ingame_type,
+                        string desc, string common_desc1, string common_desc2)
+    {
+        p_name = name;
+        p_img = img;
+        p_dictionary_type = dictionary_type;
+        p_ingame_type = ingame_type;
+        p_desc = desc;
+        p_common_desc1 = common_desc1;
+        p_common_desc2 = common_desc2;
+    }
+
+    public string Get_Name { get { return p_name; } }
+    public string Get_Img { get { return p_img; } }
+    public PORTION_DICTIONARY_TYPE Get_DictionaryType { get { return p_dictionary_type; } }
+    public PORTION_INGAME_TYPE Get_IngameType { get { return p_ingame_type; } }
+    public string Get_Desc { get { return p_desc; } }
+    public string Get_Common_Desc1 { get { return p_common_desc1; } }
+    public string Get_Common_Desc2 { get { return p_common_desc2; } }
+}
 #endregion
 
 public class TableDataManager
@@ -146,7 +176,7 @@ public class TableDataManager
             }
             catch (Exception e)
             {
-                Debug.LogError("巩力 惯积!");
+                Debug.LogError($"巩力 惯积! : {e}");
             }
             
         }
@@ -191,7 +221,7 @@ public class TableDataManager
             }
             catch(Exception e)
             {
-                Debug.LogError("巩力 惯积!!");
+                Debug.LogError($"巩力 惯积!! : {e}");
             }            
         }
     }
