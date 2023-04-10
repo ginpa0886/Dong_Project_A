@@ -11,7 +11,7 @@ public class ExcelParse : Editor
     const string Default_Csv_Path = "/Resources/Csv/";
     const string Default_Resources_Path = "Table/";
 
-    static string[] table_Names = { "Character", "Relic" };
+    static string[] table_Names = { "Character", "Relic", "Card" };
 
     [MenuItem("Table/CsvParser")]
     static void CsvParse_Default()

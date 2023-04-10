@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_sceneType: 2
-  windowManager_Prefab: {fileID: 0}
+  windowManager_Prefab: {fileID: 7010853628010790023, guid: 6a9b6fd28b4f9c14b8ae57bf023c0bf9, type: 3}
 --- !u!1 &633459907
 GameObject:
   m_ObjectHideFlags: 0

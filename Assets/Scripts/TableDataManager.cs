@@ -105,20 +105,108 @@ public class Portion_Data
     public string Get_Common_Desc1 { get { return p_common_desc1; } }
     public string Get_Common_Desc2 { get { return p_common_desc2; } }
 }
+
+public class Card_Data
+{
+    uint c_UID;
+    string c_name;
+    string c_img;
+    CARD_INGAME_TYPE c_ingame_type;
+    bool c_canEnforce;
+    bool c_isEnforce;
+    CARD_USECONDITION_TYPE c_usecondition_type;
+    ABILITY_TYPE c_ability_type;
+    int c_cost;
+    int c_value;
+    int c_enforceCost;
+    int c_enforceValue;
+
+    CARD_CLASS_TYPE c_class_type;
+    CARD_GRADE_TYPE c_grade_type;
+
+    string c_desc;
+    ABILITY_TYPE c_addedability_type1;
+    int c_addedability_value1;
+    int c_addedability_enforceValue1;
+
+    ABILITY_TYPE c_addedability_type2;    
+    int c_addedability_value2;    
+    int c_addedability_enforceValue2;
+
+    public Card_Data(uint UID, string name, string img, CARD_INGAME_TYPE ingame_type, bool canEnforce, CARD_USECONDITION_TYPE usecondition_type, ABILITY_TYPE ability_type,
+                    int cost, int value, int enforceCost, int enforceValue, CARD_CLASS_TYPE class_type, CARD_GRADE_TYPE grade_type, string desc,
+                    ABILITY_TYPE addedability_type1, int addedability_value1, int addedability_enforceValue1, 
+                    ABILITY_TYPE addedability_type2, int addedability_value2, int addedability_enforceValue2)
+    {
+        c_UID = UID;
+        c_name = name;
+        c_img = img;
+        c_ingame_type = ingame_type;
+        c_canEnforce = canEnforce;
+        c_isEnforce = false;
+        c_usecondition_type = usecondition_type;
+        c_ability_type = ability_type;
+        c_cost = cost;
+        c_value = value;
+        c_enforceCost = enforceCost;
+        c_enforceValue = enforceValue;
+
+        c_class_type = class_type;
+        c_grade_type = grade_type;
+
+        c_desc = desc;
+        c_addedability_type1 = addedability_type1;
+        c_addedability_value1 = addedability_value1;
+        c_addedability_enforceValue1 = addedability_enforceValue1;
+
+        c_addedability_type2 = addedability_type2;
+        c_addedability_value2 = addedability_value2;
+        c_addedability_enforceValue2 = addedability_enforceValue2;
+    }
+
+    public uint Get_UID { get { return c_UID; } }
+    public string Get_Name { get { return c_name; } }
+    public string Get_Img { get { return c_img; } }
+    public CARD_INGAME_TYPE Get_IngameType { get { return c_ingame_type; } }
+    public bool Get_CanEnforce { get { return c_canEnforce; } }
+    public bool Get_IsEnforce { get { return c_isEnforce; } }
+    public CARD_USECONDITION_TYPE Get_UseCondition { get { return c_usecondition_type; } }
+    public ABILITY_TYPE Get_Ability { get { return c_ability_type; } }
+    public int Get_Cost { get { return c_cost; } }
+    public int Get_Value { get { return c_value; } }
+    public int Get_EnforceCost { get { return c_enforceCost; } }
+    public int Get_EnforceValue { get { return c_enforceValue;} }
+
+    public CARD_CLASS_TYPE Get_CardClass { get { return c_class_type; } }
+    public CARD_GRADE_TYPE Get_CardGrade { get { return c_grade_type; } }
+
+    public string Get_Desc { get { return c_desc; } }
+    public ABILITY_TYPE Get_AddedAbility1 { get { return c_addedability_type1; } }
+    public int Get_AddedAbilityValue1 { get { return c_addedability_value1; } }
+    public int Get_AddedAbilityEnforce1 { get { return c_addedability_enforceValue1; } }
+
+    public ABILITY_TYPE Get_AddedAbility2 { get { return c_addedability_type2; } }
+    public int Get_AddedAbilityValue2 { get { return c_addedability_value2; } }
+    public int Get_AddedAbilityEnforce2 { get { return c_addedability_enforceValue2; } }
+
+}
 #endregion
 
 public class TableDataManager
 {
     const string relic_Table_Path = "Csv/Relic";
     const string character_Table_Path = "Csv/Character";
+    const string card_Table_Path = "Csv/Card";
 
     Dictionary<uint, Relic_Data> t_Relic = new Dictionary<uint, Relic_Data>();
     Dictionary<CHARACTER_TYPE, Character_Data> t_Character = new Dictionary<CHARACTER_TYPE, Character_Data>();
+    Dictionary<uint, Card_Data> t_Card = new Dictionary<uint, Card_Data>();
 
     public TableDataManager()
     {
         Parse_RelicTable(relic_Table_Path);
         Parse_CharacterTable(character_Table_Path);
+        Parse_CardTable(card_Table_Path);
     }
 
     string Get_CsvParseStringByFilePath(string f_Path)
@@ -226,7 +314,70 @@ public class TableDataManager
         }
     }
 
+    void Parse_CardTable(string f_Path)
+    {
+        string t_Data = Get_CsvParseStringByFilePath(f_Path);
 
+        if (t_Data == null)
+        {
+            return;
+        }
+
+        string[] rows = t_Data.Split('\n');
+
+        for (int row_index = 1; row_index < rows.Length; ++row_index)
+        {
+            string true_str = "TRUE";
+
+            string[] column = rows[row_index].Split(',');
+            if (column.Length < 2)
+            {
+                continue;
+            }
+
+            int column_index = 0;
+
+            try
+            {
+                uint c_UID = uint.Parse(column[column_index++]);
+                string c_Name = column[column_index++];
+                string c_Img = column[column_index++];
+                CARD_INGAME_TYPE c_Ingame_Type = (CARD_INGAME_TYPE)Enum.Parse(typeof(CARD_INGAME_TYPE), column[column_index++]);
+                bool c_canEnfore = column[column_index++] == true_str ? true : false;
+                CARD_USECONDITION_TYPE c_UseCondition = (CARD_USECONDITION_TYPE)Enum.Parse(typeof(CARD_USECONDITION_TYPE), column[column_index++]);
+                ABILITY_TYPE c_AbilityType = (ABILITY_TYPE)Enum.Parse(typeof(ABILITY_TYPE), column[column_index++]);
+                int c_Cost = int.Parse(column[column_index++]);
+                int c_Value = int.Parse(column[column_index++]);
+                int c_EnforceCost = int.Parse(column[column_index++]);
+                int c_EnforceValue = int.Parse(column[column_index++]);
+
+                CARD_CLASS_TYPE c_ClassType = (CARD_CLASS_TYPE)Enum.Parse(typeof(CARD_CLASS_TYPE), column[column_index++]);
+                CARD_GRADE_TYPE c_GradeType = (CARD_GRADE_TYPE)Enum.Parse(typeof(CARD_GRADE_TYPE), column[column_index++]);
+
+                string c_Desc = column[column_index++];
+                ABILITY_TYPE c_AddedAbility_Type1 = (ABILITY_TYPE)Enum.Parse(typeof(ABILITY_TYPE), column[column_index++]);
+                int c_AddedAbility_Value1 = int.Parse(column[column_index++]);
+                int c_AddedAbility_EnforceValue1 = int.Parse(column[column_index++]);
+
+                ABILITY_TYPE c_AddedAbility_Type2 = (ABILITY_TYPE)Enum.Parse(typeof(ABILITY_TYPE), column[column_index++]);
+                int c_AddedAbility_Value2 = int.Parse(column[column_index++]);
+                int c_AddedAbility_EnforceValue2 = int.Parse(column[column_index++]);
+
+                Card_Data c_Data = new Card_Data(c_UID, c_Name, c_Img, c_Ingame_Type, c_canEnfore, c_UseCondition, c_AbilityType,
+                                                 c_Cost, c_Value, c_EnforceCost, c_EnforceValue, c_ClassType, c_GradeType, c_Desc,
+                                                 c_AddedAbility_Type1, c_AddedAbility_Value1, c_AddedAbility_EnforceValue1,
+                                                 c_AddedAbility_Type2, c_AddedAbility_Value2, c_AddedAbility_EnforceValue2);
+
+
+                t_Card.Add(c_Data.Get_UID, c_Data);
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"문제 발생!! : {e}");
+            }
+        }
+    }
 
     public Relic_Data Get_TryRelicData(uint UID)
     {

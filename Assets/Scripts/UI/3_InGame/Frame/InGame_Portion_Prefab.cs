@@ -9,11 +9,6 @@ public class InGame_Portion_Prefab : MonoBehaviour
 
     Portion_Data m_PortionData;
 
-    public void Init()
-    {
-        Delete_Portion();
-    }
-
     public void Set_PortionData(Portion_Data p_Data)
     {
         this.gameObject.SetActive(true);

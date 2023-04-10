@@ -36,6 +36,7 @@ public class SceneManagerEx : MonoBehaviour
             case _Enums.SCENE_TYPE.INGAME:
                 GameManager.Instance.Win.Open(WIN_ID.INGAME_FRAME_WIN, true);
                 GameManager.Instance.Win.Open(WIN_ID.INGAME_SELECT1_WIN);
+                GameManager.Instance.Win.Open(WIN_ID.INGAME_PLAYERUI_WIN);
                 break;
         }
     }
