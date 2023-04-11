@@ -30,8 +30,17 @@ public class Card_Prefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public Card_Data Get_CardData { get { return m_CardData; } }
 
+    WaitForSeconds m_Delete;
+
+    void Start()
+    {
+        m_Card_Btn.onClick.AddListener(Use_Card);
+        m_Delete = new WaitForSeconds(0.1f);
+    }
+
     public void Set_CardData(Card_Data c_Data)
     {
+        this.gameObject.SetActive(true);
         m_CardData = c_Data;
         Update_CardUI(m_CardData);
     }
@@ -67,12 +76,47 @@ public class Card_Prefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         m_Card_Btn.image.color = m_Card_Btn.colors.normalColor;
         m_Card_Animator.Play("Card_Exit");
     }
+
     #endregion
+
+    void Use_Card()
+    {
+        // 차례에 대한 검사 진행
+        if(GameManager.Instance.InGame.Turn.Request_UserPlaySomething() == false)
+        {
+            Debug.Log("지금 내 차례가 아니야...");
+            return;
+        }
+
+        // 코스트에 대한 검사 진행
+        if (GameManager.Instance.InGame.Play.Request_UseEnergy(m_CardData.Get_Cost) == true)
+        {
+            GameManager.Instance.InGame.Cards.Abandon(m_CardData);
+            return;
+        }
+
+        Debug.Log("에너지가 부족해...");
+        return;
+    }
 
     public void Delete_CardData()
     {
-        m_CardData = null;
+        if(m_DeleteCoroutine != null)
+        {
+            StopCoroutine(m_DeleteCoroutine);
+        }
+        m_DeleteCoroutine = StartCoroutine(Co_Delete_CardData());
     }
 
-    
+    Coroutine m_DeleteCoroutine;
+
+    IEnumerator Co_Delete_CardData()
+    {
+        m_Card_Animator.Play("Card_Exit");
+
+        yield return m_Delete;
+
+        m_CardData = null;
+        this.gameObject.SetActive(false);
+    }
 }

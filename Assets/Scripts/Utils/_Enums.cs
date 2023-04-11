@@ -119,4 +119,15 @@ public static class _Enums
         MAX,
     }
     #endregion
+
+    #region TURN
+    public enum TURN_TYPE
+    {
+        NONE,
+        PLAYER,
+        MONSTER,
+
+        MAX,
+    }
+    #endregion
 }

@@ -37,6 +37,7 @@ public class SceneManagerEx : MonoBehaviour
                 GameManager.Instance.Win.Open(WIN_ID.INGAME_FRAME_WIN, true);
                 GameManager.Instance.Win.Open(WIN_ID.INGAME_SELECT1_WIN);
                 GameManager.Instance.Win.Open(WIN_ID.INGAME_PLAYERUI_WIN);
+                GameManager.Instance.InGame.Start_Game();
                 break;
         }
     }

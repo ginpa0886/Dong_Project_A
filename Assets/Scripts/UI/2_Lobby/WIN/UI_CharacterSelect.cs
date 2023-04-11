@@ -84,6 +84,7 @@ public class UI_CharacterSelect : BaseWindow
 
         GetButton((int)Buttons.Start_Btn).onClick.AddListener(() =>
         {
+            GameManager.Instance.InGame.Play.CharacterType = m_CurCharacter;
             GameManager.Instance.Scene.Set_SceneByTpye(_Enums.SCENE_TYPE.INGAME);
         });
     }

@@ -6,6 +6,7 @@ using System.Text;
 using static _Enums;
 
 #region DATA
+
 public class Character_Data
 {
     string c_name;
@@ -15,7 +16,12 @@ public class Character_Data
     string c_desc;
     Relic_Data c_default_Relic;
 
-    public Character_Data(string name, CHARACTER_TYPE type, int hp, int gold, string desc, Relic_Data default_relic)
+    int c_energy;
+    int c_drawCnt;
+    uint[] c_cards;
+
+    public Character_Data(string name, CHARACTER_TYPE type, int hp, int gold, string desc, 
+                          Relic_Data default_relic, int energy, int drawcnt, uint[] cards)
     {
         c_name = name;
         c_type = type;
@@ -23,6 +29,24 @@ public class Character_Data
         c_gold = gold;
         c_desc = desc;
         c_default_Relic = default_relic;
+
+        c_energy = energy;
+        c_drawCnt = drawcnt;
+        c_cards = cards;
+    }
+
+    public Character_Data(Character_Data c_Data)
+    {
+        c_name = c_Data.Get_Name;
+        c_type = c_Data.Get_Type;
+        c_hp = c_Data.Get_HP;
+        c_gold = c_Data.Get_Gold;
+        c_desc = c_Data.Get_Desc;
+        c_default_Relic = c_Data.Get_RelicData;
+
+        c_energy = c_Data.Get_Energy;
+        c_drawCnt = c_Data.Get_DrawCnt;
+        c_cards = c_Data.Get_Cards;
     }
 
     public string Get_Name { get { return c_name; } }
@@ -31,6 +55,12 @@ public class Character_Data
     public int Get_Gold { get { return c_gold; } }
     public string Get_Desc { get { return c_desc; } }
     public Relic_Data Get_RelicData { get { return c_default_Relic; } }
+
+    public int Get_Energy { get { return c_energy; } }
+    public int Set_Energy { set { c_energy = value; } }
+    public int Get_DrawCnt { get { return c_drawCnt; } }
+    public int Set_DrawCnt { set { c_drawCnt = value; } }
+    public uint[] Get_Cards { get { return c_cards; } }
 }
 
 public class Relic_Data
@@ -164,12 +194,40 @@ public class Card_Data
         c_addedability_enforceValue2 = addedability_enforceValue2;
     }
 
+    public Card_Data(Card_Data c_Data, bool isEnforced = false)
+    {
+        c_UID = c_Data.Get_UID;
+        c_name = c_Data.Get_Name;
+        c_img = c_Data.Get_Img;
+        c_ingame_type = c_Data.Get_IngameType;
+        c_canEnforce = isEnforced == false ? c_Data.Get_CanEnforce : false;
+        c_isEnforce = isEnforced;
+        c_usecondition_type = c_Data.Get_UseCondition;
+        c_ability_type = c_Data.Get_Ability;
+        c_cost = c_Data.Get_Cost;
+        c_value = c_Data.Get_Value;
+        c_enforceCost = c_Data.Get_EnforceCost;
+
+        c_class_type = c_Data.Get_CardClass;
+        c_grade_type = c_Data.Get_CardGrade;
+
+        c_desc = c_Data.Get_Desc;
+        c_addedability_type1 = c_Data.Get_AddedAbility1;
+        c_addedability_value1 = c_Data.Get_AddedAbilityValue1;
+        c_addedability_enforceValue1 = c_Data.c_addedability_enforceValue1;
+
+        c_addedability_type2 = c_Data.Get_AddedAbility2;
+        c_addedability_value2 = c_Data.Get_AddedAbilityValue2;
+        c_addedability_enforceValue2 = c_Data.Get_AddedAbilityEnforce2;
+    }
+
     public uint Get_UID { get { return c_UID; } }
     public string Get_Name { get { return c_name; } }
     public string Get_Img { get { return c_img; } }
     public CARD_INGAME_TYPE Get_IngameType { get { return c_ingame_type; } }
     public bool Get_CanEnforce { get { return c_canEnforce; } }
     public bool Get_IsEnforce { get { return c_isEnforce; } }
+    public bool Set_IsEnforce { set { c_isEnforce = value; } }
     public CARD_USECONDITION_TYPE Get_UseCondition { get { return c_usecondition_type; } }
     public ABILITY_TYPE Get_Ability { get { return c_ability_type; } }
     public int Get_Cost { get { return c_cost; } }
@@ -197,7 +255,7 @@ public class TableDataManager
     const string relic_Table_Path = "Csv/Relic";
     const string character_Table_Path = "Csv/Character";
     const string card_Table_Path = "Csv/Card";
-
+    
     Dictionary<uint, Relic_Data> t_Relic = new Dictionary<uint, Relic_Data>();
     Dictionary<CHARACTER_TYPE, Character_Data> t_Character = new Dictionary<CHARACTER_TYPE, Character_Data>();
     Dictionary<uint, Card_Data> t_Card = new Dictionary<uint, Card_Data>();
@@ -302,7 +360,18 @@ public class TableDataManager
                 int c_Relic_UID = int.Parse(column[column_index++]);
 
                 Relic_Data c_Relic_Data = Get_TryRelicData((uint)c_Relic_UID);
-                Character_Data c_Data = new Character_Data(c_Name, c_Type, h_Hp, c_Gold, c_Desc, c_Relic_Data);
+                int c_Energy = int.Parse(column[column_index++]);
+                int c_DrawCnt = int.Parse(column[column_index++]);
+
+                string[] cards = column[column_index].Split('/');
+                uint[] c_Cards = new uint[cards.Length];
+                for (int j = 0; j < cards.Length; ++j)
+                {
+                    c_Cards[j] = uint.Parse(cards[j]);
+                }
+                
+                Character_Data c_Data = new Character_Data(c_Name, c_Type, h_Hp, c_Gold, c_Desc, 
+                                                           c_Relic_Data, c_Energy, c_DrawCnt, c_Cards);
 
                 t_Character.Add(c_Data.Get_Type, c_Data);
 
@@ -397,6 +466,17 @@ public class TableDataManager
         }
 
         Debug.Log($"Character data is msissing! : Character type is {characterType}");
+        return null;
+    }
+
+    public Card_Data Get_TryCardDataByType(uint UID)
+    {
+        if(t_Card.TryGetValue(UID, out Card_Data value) == true)
+        {
+            return value;
+        }
+
+        Debug.Log($"there is no card data. Card UID is : {UID}");
         return null;
     }
 }
