@@ -246,7 +246,66 @@ public class Card_Data
     public ABILITY_TYPE Get_AddedAbility2 { get { return c_addedability_type2; } }
     public int Get_AddedAbilityValue2 { get { return c_addedability_value2; } }
     public int Get_AddedAbilityEnforce2 { get { return c_addedability_enforceValue2; } }
+}
 
+public class Monster_Pattern
+{
+    MONSTER_PATTERN_TYPE m_patternType;
+    int m_cnt;
+    int m_value;
+
+    public MONSTER_PATTERN_TYPE MonsterPatternType { get { return m_patternType; } set => m_patternType = value; }
+    public int MonsterPatternCnt { get { return m_cnt; } set => m_cnt = value; }
+    public int MonsterPatternValue { get { return m_value; } set => m_value = value; }
+
+    public void Set_Data(Monster_Pattern m_Pattern)
+    {
+        m_patternType = m_Pattern.MonsterPatternType;
+        m_cnt = m_Pattern.MonsterPatternCnt;
+        m_value = m_Pattern.MonsterPatternValue;
+    }
+}
+
+public class Monster_Data
+{
+    uint m_UID;
+    string m_name;
+    string m_img;
+    int m_hp;
+
+    MONSTER_TYPE m_monstertpye;
+    ABILITY_TYPE[] m_defaultability;
+    Monster_Pattern[] m_patterns;
+
+    public Monster_Data(uint UID, string name, string img, int hp, MONSTER_TYPE monstertype,
+                        ABILITY_TYPE[] defaultability, Monster_Pattern[] patterns)
+    {
+        m_UID = UID;
+        m_name = name;
+        m_img = img;
+        m_hp = hp;
+        m_monstertpye = monstertype;
+        m_defaultability = new ABILITY_TYPE[defaultability.Length];
+        for(int i = 0; i < defaultability.Length; ++i)
+        {
+            m_defaultability[i] = defaultability[i];
+        }
+
+        m_patterns = new Monster_Pattern[patterns.Length];
+        for(int i = 0; i < patterns.Length; ++i)
+        {
+            m_patterns[i] = patterns[i];
+        }
+    }
+
+    public uint Get_UID { get { return m_UID; } }
+    public string Get_Name { get { return m_name; } }
+    public string Get_Img { get { return m_img; } }
+    public int Get_Hp { get { return m_hp; } }
+
+    public MONSTER_TYPE Get_MonsterType { get { return m_monstertpye; } }
+    public ABILITY_TYPE[] Get_Abilitys { get { return m_defaultability; } }
+    public Monster_Pattern[] Get_MonsterPatterns { get { return m_patterns; } }
 }
 #endregion
 
@@ -255,16 +314,19 @@ public class TableDataManager
     const string relic_Table_Path = "Csv/Relic";
     const string character_Table_Path = "Csv/Character";
     const string card_Table_Path = "Csv/Card";
+    const string monster_Table_Path = "Csv/Monster";
     
     Dictionary<uint, Relic_Data> t_Relic = new Dictionary<uint, Relic_Data>();
     Dictionary<CHARACTER_TYPE, Character_Data> t_Character = new Dictionary<CHARACTER_TYPE, Character_Data>();
     Dictionary<uint, Card_Data> t_Card = new Dictionary<uint, Card_Data>();
+    Dictionary<uint, Monster_Data> t_Monster = new Dictionary<uint, Monster_Data>();
 
     public TableDataManager()
     {
         Parse_RelicTable(relic_Table_Path);
         Parse_CharacterTable(character_Table_Path);
         Parse_CardTable(card_Table_Path);
+        Parse_MonsterData(monster_Table_Path);
     }
 
     string Get_CsvParseStringByFilePath(string f_Path)
@@ -448,6 +510,65 @@ public class TableDataManager
         }
     }
 
+    void Parse_MonsterData(string f_Path)
+    {
+        string t_Data = Get_CsvParseStringByFilePath(f_Path);
+
+        if (t_Data == null)
+        {
+            return;
+        }
+
+        string[] rows = t_Data.Split('\n');
+
+        for (int row_index = 1; row_index < rows.Length; ++row_index)
+        {
+            const int MAX_ABILITY = 3;
+            const int MAX_PATTERN = 6;
+
+            string[] column = rows[row_index].Split(',');
+            if (column.Length < 2)
+            {
+                continue;
+            }
+
+            int column_index = 0;
+
+            try
+            {
+                uint m_UID = uint.Parse(column[column_index++]);
+                string m_Name = column[column_index++];
+                string m_img = column[column_index++];
+                int m_hp = int.Parse(column[column_index++]);
+
+                MONSTER_TYPE m_monsterType = (MONSTER_TYPE)Enum.Parse(typeof(MONSTER_TYPE), column[column_index++]);
+                ABILITY_TYPE[] m_defaultability = new ABILITY_TYPE[MAX_ABILITY];
+                for(int i = 0; i < MAX_ABILITY; ++i)
+                {
+                    m_defaultability[i] = (ABILITY_TYPE)Enum.Parse(typeof(ABILITY_TYPE), column[column_index++]);
+                }
+
+                Monster_Pattern[] m_patterns = new Monster_Pattern[MAX_PATTERN];    // 이건 주소값만 갖고 있는거구나...
+                for(int i = 0; i < MAX_PATTERN; ++i)
+                {
+                    Monster_Pattern p = new Monster_Pattern();
+                    m_patterns[i] = p;
+                    m_patterns[i].MonsterPatternType = (MONSTER_PATTERN_TYPE)Enum.Parse(typeof(MONSTER_PATTERN_TYPE), column[column_index++]);
+                    m_patterns[i].MonsterPatternCnt = int.Parse(column[column_index++]);
+                    m_patterns[i].MonsterPatternValue = int.Parse(column[column_index++]);
+                }
+
+                Monster_Data m_Data = new Monster_Data(m_UID, m_Name, m_img, m_hp, m_monsterType, m_defaultability, m_patterns);
+                t_Monster.Add(m_Data.Get_UID, m_Data);
+
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"문제 발생!! : {e}");
+            }
+        }
+    }
+
     public Relic_Data Get_TryRelicData(uint UID)
     {
         if (t_Relic.TryGetValue(UID, out Relic_Data data) == true)
@@ -477,6 +598,17 @@ public class TableDataManager
         }
 
         Debug.Log($"there is no card data. Card UID is : {UID}");
+        return null;
+    }
+
+    public Monster_Data Get_TryMonsterDataByID(uint UID)
+    {
+        if(t_Monster.TryGetValue(UID, out Monster_Data m_Data) == true)
+        {
+            return m_Data;
+        }
+
+        Debug.Log($"There is No Monster Data. ID is : {UID}");
         return null;
     }
 }

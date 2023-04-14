@@ -101,21 +101,6 @@ public class Card_Prefab : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public void Delete_CardData()
     {
-        if(m_DeleteCoroutine != null)
-        {
-            StopCoroutine(m_DeleteCoroutine);
-        }
-        m_DeleteCoroutine = StartCoroutine(Co_Delete_CardData());
-    }
-
-    Coroutine m_DeleteCoroutine;
-
-    IEnumerator Co_Delete_CardData()
-    {
-        m_Card_Animator.Play("Card_Exit");
-
-        yield return m_Delete;
-
         m_CardData = null;
         this.gameObject.SetActive(false);
     }

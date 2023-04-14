@@ -17,6 +17,8 @@ public class InGamePlayManager
 
     Character_Data d_UserCharacterData;
 
+    public Character_Data Get_CharacterData { get { return d_UserCharacterData; } }
+
     public _Enums.CHARACTER_TYPE CharacterType { get { return m_CharacterType; } set => m_CharacterType = value; } 
     public int Energy { get { return d_UserCharacterData.Get_Energy; } set => d_UserCharacterData.Set_Energy = value; }
     public int DrawCnt { get { return d_UserCharacterData.Get_DrawCnt; } set => d_UserCharacterData.Set_DrawCnt = value; }
@@ -49,6 +51,7 @@ public class InGamePlayManager
         get { return m_current_drawcnt; }
         set
         {
+            // 드로우 양을 채워주면 Draw를 진행함
             m_current_drawcnt = value;
 
             for(int i = 0; i < value; ++i)
@@ -72,6 +75,7 @@ public class InGamePlayManager
         Character_Data u_Data = GameManager.Instance.Table.Get_TryCharacterDataByType(_Enums.CHARACTER_TYPE.IRON);
         d_UserCharacterData = new Character_Data(u_Data);
 
+        // 유저 덱에 기본 카드 세팅해주기. 제일 처음에 갖고 있는 카드들로 덱을 구성
         foreach (uint c_UID in u_Data.Get_Cards)
         {
             InGame.Deck.Add_CardAtDeckByID(c_UID);
@@ -81,10 +85,10 @@ public class InGamePlayManager
     public void Set_StartBattle()
     {        
         TOTAL_ENERGY = Energy;
-        FillMax_CurrentEnergy();
+        FillMax_CurrentEnergy();    // 현재 세팅된 최대 에너지양으로 현재 에너지양 세팅
         
         TOTAL_DRAW = DrawCnt;
-        FillMax_CurrentDrawCnt();
+        FillMax_CurrentDrawCnt();   // 현재 세팅된 최대 드로우양으로 현재 드로우양 세팅
     }
     
     public void FillMax_CurrentEnergy()

@@ -116,6 +116,14 @@ public static class _Enums
         POWER_MULTIPLY,     // 힘효과 곱 연산
         PICK_AT_ABANDON,    // 버린 카드 더미에서 덱 맨위로
 
+        // MONSTER ABILITY
+        BODY_ROLL,
+        WEAK_BY_DEAD,
+        SLEEPING,
+        ARTIFACT,
+        METALIZATION,
+        CHANGE_BY_DAMAGE,
+
         MAX,
     }
     #endregion
@@ -127,6 +135,57 @@ public static class _Enums
         PLAYER,
         MONSTER,
 
+        MAX,
+    }
+    #endregion
+
+    #region CHARACTER STATE
+    public enum CHARACTER_STATE
+    {
+        NONE,
+        ALIVE,
+        DEAD,
+
+        MAX,
+    }
+    #endregion
+
+    #region MONSTER
+    public enum MONSTER_TYPE
+    {
+        NORMAL,
+        ELITE,
+        ELITE_BOSS,
+        BOSS,
+
+        MAX,
+    }
+
+    public enum MONSTER_PATTERN_TYPE
+    {
+        ATTACK,
+        DEFENCE,
+        ATTACK_DEFFENCE,
+        BUFF,
+        DEBUFF,
+
+        MAX,
+    }
+    #endregion
+
+    #region MAP
+    public enum MAP_TYPE
+    {
+        NONE,
+        EMPTY,          // 빈방
+        MONSTER,        // 몬스터
+        EVENT,          // 이벤트
+        ELITE,          // 엘리트
+        RESET_SITE,     // 휴식
+        MERCHANT,       // 상점
+        TREASURE,       // 보물
+        BOSS,
+        
         MAX,
     }
     #endregion

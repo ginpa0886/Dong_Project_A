@@ -7,7 +7,6 @@ public class InGameCardManager
     private InGameManager m_ingameManager;
     InGameManager InGame { get { return m_ingameManager; } }
     
-
     // ingame 내부에서 카드 관리 역할을 수행함
     List<Card_Data> m_curGameDeck;
 
@@ -27,13 +26,13 @@ public class InGameCardManager
         m_ingameManager = ingameManager;
     }
 
-    public void Init_GameDeck() // 한판이 시작될때의 덱을 세팅해준다.
+    public void Enter_Dungeon() // 한판이 시작될때의 덱을 세팅해준다.
     {
         // 유저 덱 클리어
         m_curGameDeck.Clear();
         List<Card_Data> c_List = InGame.Deck.Get_AllCardDataAtDeck();
 
-        // 유저 카드 생성
+        // 유저 덱으로 카드 생성(하나의 방을 들어가기 전에 덱으로 구성된 카드 덱을 만듬)
         foreach(Card_Data c_Data in c_List)
         {
             Card_Data newCard_Data = new Card_Data(c_Data);
@@ -60,6 +59,7 @@ public class InGameCardManager
         if(m_Draw.Count == 0)
         {
             Reset_DrawAtAbandon();
+            m_Draw.Shuffle();
 
             if(m_Draw.Count == 0)
             {
@@ -79,9 +79,7 @@ public class InGameCardManager
 
     
     void Reset_DrawAtAbandon()
-    {
-        m_Abandon.Shuffle();
-        
+    {                
         foreach(Card_Data c_Data in m_Abandon)
         {
             m_Draw.Add(c_Data);
