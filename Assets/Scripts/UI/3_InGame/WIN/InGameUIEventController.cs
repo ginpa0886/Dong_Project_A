@@ -15,4 +15,8 @@ public class InGameUIEventController
     public Action<Card_Data> Rebirth;
     public Action<Card_Data> Abandoned;
     #endregion
+
+    #region MAP UI
+    public Action Set_MapByData;
+    #endregion
 }

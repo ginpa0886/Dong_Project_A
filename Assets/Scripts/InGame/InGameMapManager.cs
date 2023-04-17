@@ -22,6 +22,9 @@ public class InGameMapManager
     const int TREASURE_SPOT = 7;
     const int REST_SITE = 0;
 
+    int[] row_Rate = { 45, 22, 0, 0, 5 }; // Monster, Event, Elite, Rest Site, Merchant
+    int[] high_Rate = { 45, 22, 16, 12, 5 };
+
     // 맵 구성 및 맵 데이터(몬스터, 이벤트, 상점, 보스 등을 총괄함!)
     private InGameManager m_ingameManager;
     private MAP_TYPE[,] m_ingameMap = new MAP_TYPE[MAX_Y, MAX_X];
@@ -126,51 +129,68 @@ public class InGameMapManager
                 Set_MapSpot(cur_y_pos, pos, MAP_TYPE.EMPTY);
             }
         }
+        
+        // #.3 규칙에 따라서 Empty부분에 값을 넣어주기 시작한다.
+        // 3-1. 엘리트 및 휴게소는 6층 이하로 배정할 수 없습니다.
+        // 3-2. Elite, Merchant 및 Rest site는 연속해서 사용할 수 없습니다. 경로에 연속적으로 Rest Site가 있을 수 없음
+        // 3-3. 나가는 경로가 2개 이상인 방은 모든 목적지가 고유해야 한다 동일한 룸에서 출발하는 2개의 목적지는 동일한 위치를 공유할 수 없음 => 하나의 방에서 2가지 이상의 길로 갈라지는 골목에서는 다른 타입으로 만들어 두어야 한다.
+        // 3-4 휴게소는 14층에 있을 수 없음
 
-        // #.3 9번째에는 무조건 유물을, 15번째에는 rest를 넣어준다.
-        for(int i = 0; i < MAX_X; ++i)
+        const int MIN_SPECIAL = 15 - 6;
+        const int EXCEPT_RESTSITE = 15 - 14;
+        int r_length = road[0].Count - 1;
+        int r_idx = 1;
+
+        while (r_length != 0)
         {
-            if (Get_MapSpot(TREASURE_SPOT, i) == MAP_TYPE.EMPTY)
+            // 아래층과 윗층에 따라서 다른 확률을 적용시킴
+            if (r_length > MIN_SPECIAL)
+            {
+                for(int i = 0; i < r_start_spots.Length; ++i)
+                {
+                    MAP_TYPE map_Type = Get_RandomMapTypeByRate(row_Rate);                    
+                    int posX = road[i][r_idx];
+                    int preX = road[i][r_idx - 1];
+
+                    // 연속되는 특별한 맵 타입인 경우에는 수정을 진행한다.
+                    MAP_TYPE pre_Type = Get_MapSpot(r_length, preX);
+                    map_Type = Check_SpecialMapType(pre_Type, map_Type, row_Rate);
+                    Set_MapSpot(r_length - 1, posX, map_Type);
+                }
+            }
+            else
+            {
+                for(int i = 0; i < r_start_spots.Length; ++i)
+                {
+                    MAP_TYPE map_Type = Get_RandomMapTypeByRate(high_Rate);
+                    int posX = road[i][r_idx]; int preX = road[i][r_idx - 1];
+
+                    // 연속되는 특별한 맵 타입인 경우에는 수정을 진행한다.
+                    MAP_TYPE pre_Type = Get_MapSpot(r_length, preX);
+                    map_Type = Check_SpecialMapType(pre_Type, map_Type, high_Rate);
+                    Set_MapSpot(r_length - 1, posX, map_Type);
+                }
+            }
+
+            ++r_idx;            
+            --r_length;
+        }
+
+        // 중간에 맵이 겹치거나 합쳐진 다음 나오는 맵 타입은 각기 다른 것으로 세팅해준다.
+        Update_OverlapRoadNextSpot(road);
+
+        // #.4 9번째에는 무조건 유물을, 15번째에는 rest를 넣어준다.
+        for (int i = 0; i < MAX_X; ++i)
+        {
+            if (Get_MapSpot(TREASURE_SPOT, i) != MAP_TYPE.NONE)
             {
                 Set_MapSpot(TREASURE_SPOT, i, MAP_TYPE.TREASURE);
             }
 
-            if(Get_MapSpot(REST_SITE, i) == MAP_TYPE.EMPTY)
+            if (Get_MapSpot(REST_SITE, i) != MAP_TYPE.NONE)
             {
                 Set_MapSpot(REST_SITE, i, MAP_TYPE.RESET_SITE);
-            }                
-        }
-
-        // #.4 규칙에 따라서 Empty부분에 값을 넣어주기 시작한다.
-        // 4-1. 엘리트 및 휴게소는 6층 이하로 배정할 수 없습니다.
-        // 4-2. Elite, Merchant 및 Rest site는 연속해서 사용할 수 없습니다. 경로에 연속적으로 Rest Site가 있을 수 없음
-        // 4-3. 나가는 경로가 2개 이상인 방은 모든 목적지가 고유해야 한다 동일한 룸에서 출발하는 2개의 목적지는 동일한 위치를 공유할 수 없음 => 하나의 방에서 2가지 이상의 길로 갈라지는 골목에서는 다른 타입으로 만들어 두어야 한다.
-        // 4-4 휴게소는 14층에 있을 수 없음
-
-        const int MIN_SPECIAL = 15 - 6;
-        const int EXCEPT_RESTSITE = 15 - 14;
-        
-        while(road[0].Count != 0)
-        {
-            for (int i = 0; i < road.Length; ++i)
-            {
-               
             }
-
-            if (road[0].Count == EXCEPT_RESTSITE)
-            {
-
-            }
-
-            if(road[0].Count > MIN_SPECIAL)
-            {
-
-            }
-
-            if(road[0].Count <= MIN_SPECIAL)
-            {
-
-            }            
         }
 
         // 확인 log
@@ -195,21 +215,125 @@ public class InGameMapManager
         }                        
     }
 
-    MAP_TYPE Get_RandomTypeByRate()
+    MAP_TYPE Get_RandomMapTypeByRate(int[] r_Rate, int except = -1)
     {
-        int[] room_rate = { 45, 22, 16, 12, 5 }; // Monster, Event, Elite, Rest Site, Merchant
-        int ran = UnityEngine.Random.Range(0, 100);
-        int temp = 0;
-        for(int i = 0; i < room_rate.Length; ++i)
+        int max_rate = 0;        
+        for(int i = 0; i < r_Rate.Length; ++i)
         {
-            temp += room_rate[i];
+            if(i == except)
+            {
+                continue;
+            }
+            max_rate += r_Rate[i];
+        }
+
+        int ran = UnityEngine.Random.Range(0, max_rate);
+        int temp = 0;
+        for(int i = 0; i < r_Rate.Length; ++i)
+        {
+            temp += r_Rate[i];
             if(ran <= temp)
             {
-                return (MAP_TYPE)(i - 1);
+                return (MAP_TYPE)(i + (int)MAP_TYPE.MONSTER);
             }
         }
 
         return MAP_TYPE.NONE;
+    }
+
+    MAP_TYPE Check_SpecialMapType(MAP_TYPE previous, MAP_TYPE current, int[] rate)
+    {
+        // 맵의 데이터 타입이 연속해서 특별한 방타입이 나왔을 경우에는 다시 맵타입을 만들어서 만든다
+        if((previous == MAP_TYPE.RESET_SITE || 
+            previous == MAP_TYPE.MERCHANT || 
+            previous == MAP_TYPE.ELITE) && 
+            (current == MAP_TYPE.RESET_SITE || 
+            current == MAP_TYPE.MERCHANT || 
+            current == MAP_TYPE.ELITE))
+        {
+            current = Get_RandomMapTypeByRate(rate);
+            return Check_SpecialMapType(previous, current, rate);
+        }
+
+        return current;
+    }
+
+    void Update_OverlapRoadNextSpot(List<int>[] roads)
+    {
+        List<int> same = new List<int>();
+        List<int> temp = new List<int>();
+
+        List<MAP_TYPE> m_types = new List<MAP_TYPE>();
+
+        for(int i = 1; i < roads[0].Count; ++i)
+        {
+            for(int j = 0; j < roads.Length; ++j)
+            {
+                same.Clear();
+                temp.Clear();
+
+                if(same.Contains(roads[j][i]) == true)
+                {
+                    temp.Add(j);    // 겹치는 라인들만 넣어준다
+                }
+                else
+                {
+                    same.Add(roads[j][i]);
+                }
+            }
+
+            // 겹치는 방이 없다면
+            if(temp.Count == 0)
+            {
+                same.Clear();
+                continue;
+            }
+
+            // 겹치는 방이 있다면
+            if(i < roads[0].Count - 2)  // 제일 끝방이 아닐때만 적용가능한 로직이다
+            {
+                int next_idx = i + 1;
+
+                for(int x = 0; x < temp.Count; ++x)
+                {
+                    MAP_TYPE m = Get_MapSpot(next_idx, temp[x]);
+
+                    if(m_types.Contains(m) != false)
+                    {
+                        m_types.Add(m);
+                        continue;
+                    }
+
+                    // 만약 동일한 맵 타입을 갖고 있다면....
+                    const int MIN_SPECIAL = 15 - 6;
+
+                    if (next_idx > MIN_SPECIAL)
+                    {
+                        MAP_TYPE ran = Get_RandomMapTypeByRate(row_Rate);
+                        while (m_types.Contains(ran) == true)
+                        {
+                            ran = Get_RandomMapTypeByRate(row_Rate);
+                        }
+                    }
+                    else
+                    {
+                        MAP_TYPE ran = Get_RandomMapTypeByRate(high_Rate);
+                        while (m_types.Contains(ran) == true)
+                        {
+                            ran = Get_RandomMapTypeByRate(high_Rate);
+                        }
+                    }             
+                }
+
+                // 다 다른 맵 타입으로 구성된 리스트가 완성되었다면...
+                for (int x = 0; x < temp.Count; ++x)
+                {
+                    Set_MapSpot(next_idx, temp[x], m_types[x]);
+                }
+            }
+        }
+
+        return;
     }
 
     public Character_Monster[] Get_MonsterDatas()

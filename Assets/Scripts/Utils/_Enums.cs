@@ -179,7 +179,7 @@ public static class _Enums
         NONE,
         EMPTY,          // 빈방
         MONSTER,        // 몬스터
-        EVENT,          // 이벤트
+        QUESTION_MARK,  // 이벤트
         ELITE,          // 엘리트
         RESET_SITE,     // 휴식
         MERCHANT,       // 상점

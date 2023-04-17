@@ -22,6 +22,7 @@ public enum WIN_ID
     INGAME_SELECT2_WIN,     // 인게임 선택창2 - 긴대화 포함된 UI
     INGAME_SHOP_WIN,        // 인게임 상점
     INGAME_PLAYERUI_WIN,    // 인게임 플레이어창
+    INGAME_MAP_WIN,         // 인게임 맵창
     
     MAX_WIN,
 }
